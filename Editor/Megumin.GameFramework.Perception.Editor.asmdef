@@ -1,0 +1,18 @@
+{
+    "name": "Megumin.GameFramework.Perception.Editor",
+    "rootNamespace": "Megumin.GameFramework.Perception.Editor",
+    "references": [
+        "Megumin.GameFramework.Perception"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

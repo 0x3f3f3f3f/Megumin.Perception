@@ -1,0 +1,16 @@
+{
+    "name": "Megumin.GameFramework.Perception",
+    "rootNamespace": "Megumin.GameFramework.Perception",
+    "references": [
+        "GUID:293b3db1567cc8e479b4623ded498cfa"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
