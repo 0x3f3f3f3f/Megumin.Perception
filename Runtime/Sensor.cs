@@ -14,7 +14,7 @@ namespace Megumin.GameFramework.Sensor
         public bool PhysicsTestRadiusSelf = false;
         public GameObjectFilter Filter;
 
-        public virtual List<Collider> PhysicsTest(float maxR,GameObjectFilter overrideFilter = null)
+        public virtual List<Collider> PhysicsTest(float maxR, GameObjectFilter overrideFilter = null)
         {
             var filter = this.Filter;
             if (overrideFilter != null)
@@ -42,6 +42,61 @@ namespace Megumin.GameFramework.Sensor
             }
 
             return colliders;
+        }
+
+        /// <summary>
+        /// 物理测试仅能在主线程调用，这里不用考虑hitColliders多线程访问问题。
+        /// </summary>
+        Collider[] hitColliders = new Collider[20];
+
+        public virtual bool TryPhysicsTest(float radius,
+                                           List<Collider> results,
+                                           GameObjectFilter overrideFilter = null,
+                                           int maxColliders = 10)
+        {
+            var filter = this.Filter;
+            if (overrideFilter != null)
+            {
+                filter = overrideFilter;
+            }
+
+            if (hitColliders.Length < maxColliders)
+            {
+                hitColliders = new Collider[maxColliders];
+            }
+
+            var layerMask = -1;
+            if (filter.LayerMask.Enabled)
+            {
+                layerMask = filter.LayerMask.Value;
+            }
+
+            int numColliders = Physics.OverlapSphereNonAlloc(transform.position, radius, hitColliders, layerMask);
+
+            for (int i = 0; i < numColliders; i++)
+            {
+                var collider = hitColliders[i];
+                var go = collider.gameObject;
+                if (filter.CheckTag(go)
+                    && filter.CheckExclude(go)
+                    && CheckCollider(collider))
+                {
+                    results.Add(collider);
+                }
+            }
+            Array.Clear(hitColliders, 0, hitColliders.Length);
+
+            return true;
+        }
+
+        /// <summary>
+        /// 用于子类重写
+        /// </summary>
+        /// <param name="collider"></param>
+        /// <returns></returns>
+        public virtual bool CheckCollider(Collider collider)
+        {
+            return true;
         }
 
         /// <summary>
