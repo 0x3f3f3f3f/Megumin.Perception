@@ -8,49 +8,10 @@ namespace Megumin.GameFramework.Sensor
 {
     public class Sensor : MonoBehaviour
     {
-        /// <summary>
-        /// 探测器是不是自己进行物理检测,可能由高级复合感知模块统一进行物理测试
-        /// </summary>
-        public bool PhysicsTestRadiusSelf = false;
         public GameObjectFilter Filter;
 
-        public virtual List<Collider> PhysicsTest(float maxR, GameObjectFilter overrideFilter = null)
-        {
-            var filter = this.Filter;
-            if (overrideFilter != null)
-            {
-                filter = overrideFilter;
-            }
 
-            Collider[] res = Array.Empty<Collider>();
-            if (filter.LayerMask.Enabled)
-            {
-                res = Physics.OverlapSphere(transform.position, maxR, filter.LayerMask.Value);
-            }
-            else
-            {
-                res = Physics.OverlapSphere(transform.position, maxR);
-            }
-
-            List<Collider> colliders = new List<Collider>();
-            foreach (var item in res)
-            {
-                if (filter.CheckTag(item.gameObject))
-                {
-                    colliders.Add(item);
-                }
-            }
-
-            return colliders;
-        }
-
-        /// <summary>
-        /// 物理测试仅能在主线程调用，这里不用考虑hitColliders多线程访问问题。
-        /// </summary>
-        Collider[] hitColliders = new Collider[20];
-
-        public virtual bool TryPhysicsTest(float radius,
-                                           List<Collider> results,
+        public virtual bool TryPhysicsTest(HashSet<Collider> results,
                                            GameObjectFilter overrideFilter = null,
                                            int maxColliders = 10)
         {
@@ -60,33 +21,12 @@ namespace Megumin.GameFramework.Sensor
                 filter = overrideFilter;
             }
 
-            if (hitColliders.Length < maxColliders)
-            {
-                hitColliders = new Collider[maxColliders];
-            }
+            return filter.TryPhysicsTest(transform.position, GetRadius(), results, CheckCollider);
+        }
 
-            var layerMask = -1;
-            if (filter.LayerMask.Enabled)
-            {
-                layerMask = filter.LayerMask.Value;
-            }
-
-            int numColliders = Physics.OverlapSphereNonAlloc(transform.position, radius, hitColliders, layerMask);
-
-            for (int i = 0; i < numColliders; i++)
-            {
-                var collider = hitColliders[i];
-                var go = collider.gameObject;
-                if (filter.CheckTag(go)
-                    && filter.CheckExclude(go)
-                    && CheckCollider(collider))
-                {
-                    results.Add(collider);
-                }
-            }
-            Array.Clear(hitColliders, 0, hitColliders.Length);
-
-            return true;
+        public virtual float GetRadius()
+        {
+            return 0;
         }
 
         /// <summary>

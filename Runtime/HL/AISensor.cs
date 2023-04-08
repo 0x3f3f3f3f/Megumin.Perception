@@ -17,16 +17,6 @@ namespace Megumin.GameFramework.Sensor
         public HearingSensor HearingSensor;
         [ProtectedInInspector]
         public SightSensor SightSensor;
-        /// <summary>
-        /// 接近检测，实现检测夹角不应该过大，但是如果对象非常近，夹角很小的时候又看不见，就不是很合理
-        /// 所有使用一个视线检测，距离很近，但夹角很大的额外检测
-        /// 将不同Level放到Sight里去
-        /// </summary>
-        [ProtectedInInspector]
-        public SightSensor NearSensor;
-
-        [ProtectedInInspector]
-        public List<T> Ignore = new List<T>();
 
         public void Awake()
         {
@@ -49,33 +39,13 @@ namespace Megumin.GameFramework.Sensor
             {
                 SightSensor = GetComponentInChildren<SightSensor>();
             }
-
-            for (int i = Ignore.Count - 1; i >= 0; i--)
-            {
-                if (Ignore[i] == null)
-                {
-                    Ignore.RemoveAt(i);
-                }
-            }
-
-            var self = GetComponentInParent<T>();
-            if (self != null)
-            {
-                if (!Ignore.Contains(self))
-                {
-                    Ignore.Add(self);
-                }
-            }
         }
 
         [ReadOnlyInInspector]
-        public List<T> SightTarget = new List<T>();
-        [ReadOnlyInInspector]
-        public List<T> HearingTarget = new List<T>();
-        [ReadOnlyInInspector]
         public List<T> InSensor = new List<T>();
-        List<T> OldInSensor = new List<T>();
 
+        HashSet<Collider> inSensorColliders = new();
+        HashSet<T> tempInSensor = new();
         private void Update()
         {
             if (Time.time < nextCheckStamp)
@@ -84,81 +54,30 @@ namespace Megumin.GameFramework.Sensor
             }
             nextCheckStamp = Time.time + checkDelta;
 
-            var mixR = Mathf.Max(HearingSensor.Radius, SightSensor.Level.Max(x=>x.Radius));
-            var collidersInRadius = PhysicsTest(mixR);
-
-            SightTarget.Clear();
-            HearingTarget.Clear();
-
-            ///交换引用
-            (InSensor, OldInSensor) = (OldInSensor, InSensor);
-
-            InSensor.Clear();
-            foreach (var item in collidersInRadius)
+            inSensorColliders.Clear();
+            if (SightSensor)
             {
-                var tarC = item.GetComponentInParent<T>();
-                if (tarC == null)
-                {
-                    continue;
-                }
+                SightSensor.TryPhysicsTest(inSensorColliders, Filter);
+            }
 
-                if (Ignore.Contains(tarC))
-                {
-                    continue;
-                }
+            if (HearingSensor)
+            {
+                HearingSensor.TryPhysicsTest(inSensorColliders, Filter);
+            }
 
-                if (tarC is MonoBehaviour behaviour)
+            tempInSensor.Clear();
+            foreach (Collider c in inSensorColliders)
+            {
+                var tV = c.GetComponentInParent<T>();
+                if (tV != null)
                 {
-                    if (SightSensor.Check(behaviour, item))
-                    {
-                        //在视觉范围内
-                        SightTarget.Add(tarC);
-                        if (!InSensor.Contains(tarC))
-                        {
-                            InSensor.Add(tarC);
-                        }
-                    }
-
-                    if (HearingSensor.Check(behaviour))
-                    {
-                        HearingTarget.Add(tarC);
-                        if (!InSensor.Contains(tarC))
-                        {
-                            InSensor.Add(tarC);
-                        }
-                    }
+                    tempInSensor.Add(tV);
                 }
             }
 
-            ///检测已经在感知范围内的，看看是不是离开感知范围
             foreach (var item in InSensor)
             {
-                if (item is MonoBehaviour behaviour)
-                {
-                    if (SightSensor.Check(behaviour, null))
-                    {
-                        //在视觉范围内
-                        SightTarget.Add(item);
-                        if (!InSensor.Contains(item))
-                        {
-                            InSensor.Add(item);
-                        }
-                    }
-
-                    if (HearingSensor.Check(behaviour))
-                    {
-                        HearingTarget.Add(item);
-                        if (!InSensor.Contains(item))
-                        {
-                            InSensor.Add(item);
-                        }
-                    }
-                }
-            }
-
-            foreach (var item in OldInSensor)
-            {
-                if (InSensor.Contains(item))
+                if (tempInSensor.Contains(item))
                 {
 
                 }
@@ -169,9 +88,9 @@ namespace Megumin.GameFramework.Sensor
                 }
             }
 
-            foreach (var item in InSensor)
+            foreach (var item in tempInSensor)
             {
-                if (OldInSensor.Contains(item))
+                if (InSensor.Contains(item))
                 {
 
                 }
@@ -182,7 +101,8 @@ namespace Megumin.GameFramework.Sensor
                 }
             }
 
-            OldInSensor.Clear();
+            InSensor.Clear();
+            InSensor.AddRange(tempInSensor);
         }
 
         [ReadOnlyInInspector]

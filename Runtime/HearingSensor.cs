@@ -42,14 +42,14 @@ namespace Megumin.GameFramework.Sensor
             }
             nextCheckStamp = Time.time + checkDelta;
 
-            if (PhysicsTestRadiusSelf)
-            {
-                var collidersInRadius = Physics.OverlapSphere(transform.position, Radius);
-                foreach (var item in collidersInRadius)
-                {
-                    Check(item);
-                }
-            }
+            //if (PhysicsTestRadiusSelf)
+            //{
+            //    var collidersInRadius = Physics.OverlapSphere(transform.position, Radius);
+            //    foreach (var item in collidersInRadius)
+            //    {
+            //        Check(item);
+            //    }
+            //}
 
             using var _handle = ListPool<Component>.Rent(out var list);
             list.AddRange(hearingdelta.Keys);

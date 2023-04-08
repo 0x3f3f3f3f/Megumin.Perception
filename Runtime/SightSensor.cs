@@ -37,55 +37,29 @@ namespace Megumin.GameFramework.Sensor
         [ReadOnlyInInspector]
         public string Type = SensorType.Sight;
 
-        //[Range(0, 30)]
-        //public float Radius = 15;
-        //[Range(0, 360)]
-        //public float HorizontalAngle = 120;
-        //[Range(0, 360)]
-        //public float VerticalAngle = 160;
+        public List<SightLevel> Level = new() { new SightLevel() };
 
-        public List<SightLevel> Level = new List<SightLevel>() { new SightLevel() };
-
-        private void Start()
+        public override float GetRadius()
         {
-
+            var maxR = Level.Max(x => x.Radius);
+            return maxR;
         }
 
-        public void Update()
-        {
-            if (Time.time < nextCheckStamp)
-            {
-                return;
-            }
-            nextCheckStamp = Time.time + checkDelta;
-
-            if (PhysicsTestRadiusSelf)
-            {
-                var maxR = Level.Max(x => x.Radius);
-
-                var res = PhysicsTest(maxR);
-                foreach (var item in res)
-                {
-                    CheckTarget(item);
-                }
-            }
-        }
-
-        public virtual bool CheckTarget(Collider target)
-        {
-            return false;
-        }
-
-        public bool Check(MonoBehaviour target, Collider collider)
+        public override bool CheckCollider(Collider collider)
         {
             if (!enabled)
             {
                 return false;
             }
 
+            return CheckInLevel(collider);
+        }
+
+        public bool CheckInLevel(Collider collider)
+        {
             foreach (var level in Level)
             {
-                if (CheckLevel(target, collider, level))
+                if (CheckLevel(collider, level))
                 {
                     return true;
                 }
@@ -94,13 +68,13 @@ namespace Megumin.GameFramework.Sensor
             return false;
         }
 
-        public bool CheckLevel(MonoBehaviour target, Collider collider, SightLevel level)
+        bool CheckLevel(Collider collider, SightLevel level)
         {
             //一个对象可能有多个碰撞盒，每个碰撞盒都要检测
-            var dis = Vector3.Distance(transform.position, target.transform.position);
+            var dis = Vector3.Distance(collider.transform.position, transform.position);
             if (dis < level.Radius)
             {
-                var dir = target.transform.position - transform.position;
+                var dir = collider.transform.position - transform.position;
                 var hAngle = Vector3.SignedAngle(dir, transform.forward, transform.up);
                 hAngle = Mathf.Abs(hAngle);
                 if (hAngle > level.HorizontalAngle / 2)
@@ -119,13 +93,6 @@ namespace Megumin.GameFramework.Sensor
             }
             return false;
         }
-
-        //[Header("Debug")]
-        //[Space]
-        //public bool DebugSolid = false;
-        //public Color DebugColor = Color.green;
-        //[Range(0, 10)]
-        //public float DebugLineThickness = 2;
     }
 }
 
