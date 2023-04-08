@@ -14,12 +14,12 @@ namespace Megumin.GameFramework.Sensor
         public float Radius = 7.5f;
 
         /// <summary>
-        /// 每次增加目标听觉值
+        /// 每秒增加目标听觉值
         /// </summary>
-        [Range(0, 50)]  
+        [Range(0, 50)]
         public int AddValueInRange = 10;
         /// <summary>
-        ///每次减少目标听觉值
+        ///每秒减少目标听觉值
         /// </summary>
         [Range(0, 50)]
         public int RemoveValueOutRange = 10;
@@ -34,6 +34,8 @@ namespace Megumin.GameFramework.Sensor
         [Range(0, 100)]
         public int MaxSumValue = 100;
 
+        HashSet<Collider> inSensorColliders = new();
+        static List<Component> list = new();
         public void Update()
         {
             if (Time.time < nextCheckStamp)
@@ -42,23 +44,20 @@ namespace Megumin.GameFramework.Sensor
             }
             nextCheckStamp = Time.time + checkDelta;
 
-            //if (PhysicsTestRadiusSelf)
-            //{
-            //    var collidersInRadius = Physics.OverlapSphere(transform.position, Radius);
-            //    foreach (var item in collidersInRadius)
-            //    {
-            //        Check(item);
-            //    }
-            //}
+            inSensorColliders.Clear();
+            Filter.TryPhysicsTest(transform.position, GetRadius(), inSensorColliders);
+            foreach (var item in inSensorColliders)
+            {
+                Check(item);
+            }
 
-            using var _handle = ListPool<Component>.Rent(out var list);
+            list.Clear();
             list.AddRange(hearingdelta.Keys);
 
-            //每次更新减少10点听觉值，小于0就移除
             foreach (var item in list)
             {
                 var v = hearingdelta[item];
-                
+
                 var dis = Vector3.Distance(transform.position, item.transform.position);
                 if (dis < Radius)
                 {
@@ -71,7 +70,7 @@ namespace Megumin.GameFramework.Sensor
                         //每次在范围内就增加听觉值
                         v += AddValueInRange * checkDelta;
                     }
-                    
+
                     v = Mathf.Min(v, MaxSumValue);
                 }
                 else
@@ -86,16 +85,14 @@ namespace Megumin.GameFramework.Sensor
                     hearingdelta.Remove(item);
                 }
             }
+
+            //防止内存泄露
+            list.Clear();
         }
 
         Dictionary<Component, float> hearingdelta = new Dictionary<Component, float>();
         public bool Check(Component target)
         {
-            if (!enabled)
-            {
-                return false;
-            }
-
             var current = 0f;
             if (hearingdelta.TryGetValue(target, out var delta))
             {
@@ -108,6 +105,29 @@ namespace Megumin.GameFramework.Sensor
 
             //在视听觉围内
             return current >= TriggerValue;
+        }
+
+        public override bool TryPhysicsTest(HashSet<Collider> results, GameObjectFilter overrideFilter = null, int maxColliders = 10)
+        {
+            foreach (var item in hearingdelta)
+            {
+                if (Check(item.Key))
+                {
+                    if (overrideFilter != null)
+                    {
+                        if (overrideFilter.Check(item.Key))
+                        {
+                            results.Add(item.Key as Collider);
+                        }
+                    }
+                    else
+                    {
+                        results.Add(item.Key as Collider);
+                    }
+                }
+            }
+
+            return true;
         }
 
         [Header("Debug")]
@@ -140,7 +160,7 @@ namespace Megumin.GameFramework.Sensor
             {
                 Gizmos.DrawSphere(transform.position, Radius);
             }
-           
+
             var wireColor = Gizmos.color;
             wireColor.a = 1;
             Gizmos.color = wireColor;
