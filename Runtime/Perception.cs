@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Megumin.GameFramework.Perception
 {
     /// <summary>
-    /// Mask这里设置了，HearingSensor，SightSensor就不用设置了
+    /// 与<see cref="Sensor"/>一起使用
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public partial class Perception<T> : MonoBehaviour
@@ -16,35 +16,31 @@ namespace Megumin.GameFramework.Perception
         public Enableable<GameObjectFilter> OverrideFilter;
 
         [ProtectedInInspector]
-        public List<Sensor> Sensor;
+        public List<Sensor> InChildrenSensors;
 
         public void Awake()
         {
             var sensor2 = gameObject.GetComponentsInChildren<Sensor>(true);
             foreach (var sensor in sensor2)
             {
-                if (Sensor.Contains(sensor))
+                if (!InChildrenSensors.Contains(sensor))
                 {
-
-                }
-                else
-                {
-                    Sensor.Add(sensor);
+                    InChildrenSensors.Add(sensor);
                 }
             }
         }
 
         private void Reset()
         {
-            if (Sensor != null)
+            if (InChildrenSensors != null)
             {
-                Sensor.Clear();
-                gameObject.GetComponentsInChildren(true, Sensor);
+                InChildrenSensors.Clear();
+                gameObject.GetComponentsInChildren(true, InChildrenSensors);
             }
         }
 
         [ReadOnlyInInspector]
-        public List<T> InSensor = new List<T>();
+        public List<T> InSensor = new();
 
         /// <summary>
         /// 更新间隔
@@ -71,7 +67,7 @@ namespace Megumin.GameFramework.Perception
         {
             inSensorColliders.Clear();
 
-            if (Sensor != null)
+            if (InChildrenSensors != null)
             {
                 GameObjectFilter filter = null;
                 if (OverrideFilter.Enabled)
@@ -79,7 +75,7 @@ namespace Megumin.GameFramework.Perception
                     filter = OverrideFilter.Value;
                 }
 
-                foreach (var item in Sensor)
+                foreach (var item in InChildrenSensors)
                 {
                     if (item != null)
                     {

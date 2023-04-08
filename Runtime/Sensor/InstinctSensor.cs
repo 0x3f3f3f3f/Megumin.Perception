@@ -6,38 +6,45 @@ using System.Linq;
 namespace Megumin.GameFramework.Perception
 {
     /// <summary>
+    /// 被警觉感知对象可以设置自己的响声，用于潜行靠近功能。
+    /// </summary>
+    public interface IInstinctSensorTarget
+    {
+        float SensorSound { get; }
+    }
+
+    /// <summary>
     /// 直觉，直感，本能
     /// </summary>
     public partial class InstinctSensor : Sensor
     {
         [ReadOnlyInInspector]
-        public string Type = SensorType.Hearing;
+        public string Type = SensorType.Instinct;
 
         [Range(0, 30)]
         public float Radius = 7.5f;
 
         /// <summary>
-        /// 每秒增加目标听觉值
+        /// 每秒增加目标警觉值
         /// </summary>
-        [Range(0, 50)]
-        public int AddValueInRange = 10;
-        /// <summary>
-        ///每秒减少目标听觉值
-        /// </summary>
-        [Range(0, 50)]
-        public int RemoveValueOutRange = 10;
-        /// <summary>
-        /// 触发被听见的阈值
-        /// </summary>
-        [Range(0, 100)]
-        public int TriggerValue = 50;
-        /// <summary>
-        /// 最大累计听觉值，这个值是为了脱离范围能很快消退被感知
-        /// </summary>
-        [Range(0, 100)]
-        public int MaxSumValue = 100;
+        public float AddValueInRange = 0.1f;
 
-        HashSet<Collider> inSensorColliders = new();
+        /// <summary>
+        ///每秒减少目标警觉值
+        /// </summary>
+        public float RemoveValueOutRange = 0.1f;
+
+        /// <summary>
+        /// 触发被警觉的阈值
+        /// </summary>
+        public float TriggerValue = 1;
+
+        /// <summary>
+        /// 最大累计警觉值，这个值是为了脱离范围能很快消退被感知
+        /// </summary>
+        public float MaxSumValue = 2;
+
+        static HashSet<Collider> inSensorColliders = new();
         static List<Component> list = new();
 
         /// <summary>
@@ -64,22 +71,22 @@ namespace Megumin.GameFramework.Perception
             }
 
             list.Clear();
-            list.AddRange(hearingdelta.Keys);
+            list.AddRange(instinctdelta.Keys);
 
             foreach (var item in list)
             {
-                var v = hearingdelta[item];
+                var v = instinctdelta[item];
 
                 var dis = Vector3.Distance(transform.position, item.transform.position);
                 if (dis < Radius)
                 {
-                    if (item is IHearingSensorTarget hearingSensorTarget)
+                    if (item is IInstinctSensorTarget instinctSensorTarget)
                     {
-                        v += hearingSensorTarget.SensorSound * checkDelta;
+                        v += instinctSensorTarget.SensorSound * checkDelta;
                     }
                     else
                     {
-                        //每次在范围内就增加听觉值
+                        //每次在范围内就增加警觉值
                         v += AddValueInRange * checkDelta;
                     }
 
@@ -90,11 +97,11 @@ namespace Megumin.GameFramework.Perception
                     v -= RemoveValueOutRange * checkDelta;
                 }
 
-                hearingdelta[item] = v;
+                instinctdelta[item] = v;
 
                 if (v < 0)
                 {
-                    hearingdelta.Remove(item);
+                    instinctdelta.Remove(item);
                 }
             }
 
@@ -102,20 +109,20 @@ namespace Megumin.GameFramework.Perception
             list.Clear();
         }
 
-        Dictionary<Component, float> hearingdelta = new Dictionary<Component, float>();
+        Dictionary<Component, float> instinctdelta = new Dictionary<Component, float>();
         public bool Check(Component target)
         {
             var current = 0f;
-            if (hearingdelta.TryGetValue(target, out var delta))
+            if (instinctdelta.TryGetValue(target, out var delta))
             {
                 current = delta;
             }
             else
             {
-                hearingdelta[target] = current;
+                instinctdelta[target] = current;
             }
 
-            //在视听觉围内
+            //在视警觉围内
             return current >= TriggerValue;
         }
 
@@ -126,7 +133,7 @@ namespace Megumin.GameFramework.Perception
                 return false;
             }
 
-            foreach (var item in hearingdelta)
+            foreach (var item in instinctdelta)
             {
                 if (Check(item.Key))
                 {
@@ -171,7 +178,7 @@ namespace Megumin.GameFramework.Perception
                 return;
             }
 
-            //绘制听觉半径
+            //绘制警觉半径
             Gizmos.color = DebugColor;
             if (DebugSolid)
             {
@@ -184,7 +191,7 @@ namespace Megumin.GameFramework.Perception
             Gizmos.DrawWireSphere(transform.position, Radius);
 
             Handles.color = wireColor;
-            foreach (var item in hearingdelta)
+            foreach (var item in instinctdelta)
             {
                 Handles.Label(item.Key.transform.position + Vector3.up, item.Value.ToString(),
                     GUI.skin.textField);

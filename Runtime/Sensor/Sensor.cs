@@ -75,6 +75,6 @@ namespace Megumin.GameFramework.Perception
     public class SensorType
     {
         public const string Sight = nameof(Sight);
-        public const string Hearing = nameof(Hearing);
+        public const string Instinct = nameof(Instinct);
     }
 }
