@@ -129,6 +129,8 @@ namespace Megumin.GameFramework.Perception
 
         public virtual void OnFindTarget(T target)
         {
+            //TODO，根据Sensor类型区分。
+
             //Debug.Log($"感知模块 发现新目标");
             if (AutoTarget == null)
             {
@@ -141,7 +143,7 @@ namespace Megumin.GameFramework.Perception
             //Debug.Log($"感知模块 失去目标");
             if (target == AutoTarget)
             {
-                AutoTarget = InSensor.FirstOrDefault();
+                AutoTarget = default;
             }
         }
 
