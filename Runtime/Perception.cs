@@ -4,17 +4,27 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-namespace Megumin.GameFramework.Sensor
+namespace Megumin.GameFramework.Perception
 {
     /// <summary>
     /// Mask这里设置了，HearingSensor，SightSensor就不用设置了
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public partial class AISensor<T> : Sensor
+    public partial class Perception<T> : MonoBehaviour
         where T : class
     {
+        public GameObjectFilter Filter;
+
+        /// <summary>
+        /// 更新间隔
+        /// </summary>
+        [Space]
+        [Range(0, 5)]
+        public float checkDelta = 0.5f;
+        protected float nextCheckStamp;
+
         [ProtectedInInspector]
-        public HearingSensor HearingSensor;
+        public InstinctSensor InstinctSensor;
         [ProtectedInInspector]
         public SightSensor SightSensor;
 
@@ -30,9 +40,9 @@ namespace Megumin.GameFramework.Sensor
 
         void FindComponent()
         {
-            if (!HearingSensor)
+            if (!InstinctSensor)
             {
-                HearingSensor = GetComponentInChildren<HearingSensor>();
+                InstinctSensor = GetComponentInChildren<InstinctSensor>();
             }
 
             if (!SightSensor)
@@ -60,9 +70,9 @@ namespace Megumin.GameFramework.Sensor
                 SightSensor.TryPhysicsTest(inSensorColliders, Filter);
             }
 
-            if (HearingSensor)
+            if (InstinctSensor)
             {
-                HearingSensor.TryPhysicsTest(inSensorColliders, Filter);
+                InstinctSensor.TryPhysicsTest(inSensorColliders, Filter);
             }
 
             tempInSensor.Clear();
@@ -138,10 +148,10 @@ namespace Megumin.GameFramework.Sensor
 
 #if UNITY_EDITOR
 
-namespace Megumin.GameFramework.Sensor
+namespace Megumin.GameFramework.Perception
 {
     using UnityEditor;
-    partial class AISensor<T>
+    partial class Perception<T>
     {
         public void OnDrawGizmosSelected()
         {

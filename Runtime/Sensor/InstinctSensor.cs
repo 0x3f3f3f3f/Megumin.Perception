@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace Megumin.GameFramework.Sensor
+namespace Megumin.GameFramework.Perception
 {
-    public partial class HearingSensor : Sensor
+    /// <summary>
+    /// 直觉，直感，本能
+    /// </summary>
+    public partial class InstinctSensor : Sensor
     {
         [ReadOnlyInInspector]
         public string Type = SensorType.Hearing;
@@ -142,10 +145,10 @@ namespace Megumin.GameFramework.Sensor
 
 #if UNITY_EDITOR
 
-namespace Megumin.GameFramework.Sensor
+namespace Megumin.GameFramework.Perception
 {
     using UnityEditor;
-    partial class HearingSensor
+    partial class InstinctSensor
     {
         private void OnDrawGizmosSelected()
         {

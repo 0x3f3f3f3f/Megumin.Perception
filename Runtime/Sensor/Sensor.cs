@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.ComponentModel;
 
-namespace Megumin.GameFramework.Sensor
+namespace Megumin.GameFramework.Perception
 {
     public class Sensor : MonoBehaviour
     {
