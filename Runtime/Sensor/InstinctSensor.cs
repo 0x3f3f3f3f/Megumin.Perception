@@ -39,6 +39,15 @@ namespace Megumin.GameFramework.Perception
 
         HashSet<Collider> inSensorColliders = new();
         static List<Component> list = new();
+
+        /// <summary>
+        /// 更新间隔
+        /// </summary>
+        [Space]
+        [Range(0, 5)]
+        public float checkDelta = 0.5f;
+        protected float nextCheckStamp;
+
         public void Update()
         {
             if (Time.time < nextCheckStamp)
@@ -110,8 +119,13 @@ namespace Megumin.GameFramework.Perception
             return current >= TriggerValue;
         }
 
-        public override bool TryPhysicsTest(HashSet<Collider> results, GameObjectFilter overrideFilter = null, int maxColliders = 10)
+        public override bool TryGetInSensor(HashSet<Collider> results, GameObjectFilter overrideFilter = null, int maxColliders = 10)
         {
+            if (enabled == false)
+            {
+                return false;
+            }
+
             foreach (var item in hearingdelta)
             {
                 if (Check(item.Key))

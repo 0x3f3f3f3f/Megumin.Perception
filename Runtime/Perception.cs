@@ -13,7 +13,38 @@ namespace Megumin.GameFramework.Perception
     public partial class Perception<T> : MonoBehaviour
         where T : class
     {
-        public GameObjectFilter Filter;
+        public Enableable<GameObjectFilter> OverrideFilter;
+
+        [ProtectedInInspector]
+        public List<Sensor> Sensor;
+
+        public void Awake()
+        {
+            var sensor2 = gameObject.GetComponentsInChildren<Sensor>(true);
+            foreach (var sensor in sensor2)
+            {
+                if (Sensor.Contains(sensor))
+                {
+
+                }
+                else
+                {
+                    Sensor.Add(sensor);
+                }
+            }
+        }
+
+        private void Reset()
+        {
+            if (Sensor != null)
+            {
+                Sensor.Clear();
+                gameObject.GetComponentsInChildren(true, Sensor);
+            }
+        }
+
+        [ReadOnlyInInspector]
+        public List<T> InSensor = new List<T>();
 
         /// <summary>
         /// 更新间隔
@@ -23,39 +54,9 @@ namespace Megumin.GameFramework.Perception
         public float checkDelta = 0.5f;
         protected float nextCheckStamp;
 
-        [ProtectedInInspector]
-        public InstinctSensor InstinctSensor;
-        [ProtectedInInspector]
-        public SightSensor SightSensor;
+        protected HashSet<Collider> inSensorColliders { get; } = new();
+        protected HashSet<T> tempInSensor { get; } = new();
 
-        public void Awake()
-        {
-            FindComponent();
-        }
-
-        private void Reset()
-        {
-            FindComponent();
-        }
-
-        void FindComponent()
-        {
-            if (!InstinctSensor)
-            {
-                InstinctSensor = GetComponentInChildren<InstinctSensor>();
-            }
-
-            if (!SightSensor)
-            {
-                SightSensor = GetComponentInChildren<SightSensor>();
-            }
-        }
-
-        [ReadOnlyInInspector]
-        public List<T> InSensor = new List<T>();
-
-        HashSet<Collider> inSensorColliders = new();
-        HashSet<T> tempInSensor = new();
         private void Update()
         {
             if (Time.time < nextCheckStamp)
@@ -63,16 +64,28 @@ namespace Megumin.GameFramework.Perception
                 return;
             }
             nextCheckStamp = Time.time + checkDelta;
+            CheckSensor();
+        }
 
+        protected virtual void CheckSensor()
+        {
             inSensorColliders.Clear();
-            if (SightSensor)
-            {
-                SightSensor.TryPhysicsTest(inSensorColliders, Filter);
-            }
 
-            if (InstinctSensor)
+            if (Sensor != null)
             {
-                InstinctSensor.TryPhysicsTest(inSensorColliders, Filter);
+                GameObjectFilter filter = null;
+                if (OverrideFilter.Enabled)
+                {
+                    filter = OverrideFilter.Value;
+                }
+
+                foreach (var item in Sensor)
+                {
+                    if (item != null)
+                    {
+                        item.TryGetInSensor(inSensorColliders, filter);
+                    }
+                }
             }
 
             tempInSensor.Clear();

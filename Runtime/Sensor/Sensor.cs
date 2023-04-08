@@ -6,15 +6,25 @@ using System.ComponentModel;
 
 namespace Megumin.GameFramework.Perception
 {
-    public class Sensor : MonoBehaviour
+    public interface ISensor
+    {
+        bool TryGetInSensor(HashSet<Collider> results, GameObjectFilter overrideFilter = null, int maxColliders = 10);
+    }
+
+    public class Sensor : MonoBehaviour, ISensor
     {
         public GameObjectFilter Filter;
 
 
-        public virtual bool TryPhysicsTest(HashSet<Collider> results,
+        public virtual bool TryGetInSensor(HashSet<Collider> results,
                                            GameObjectFilter overrideFilter = null,
                                            int maxColliders = 10)
         {
+            if (enabled == false)
+            {
+                return false;
+            }
+
             var filter = this.Filter;
             if (overrideFilter != null)
             {
@@ -38,15 +48,6 @@ namespace Megumin.GameFramework.Perception
         {
             return true;
         }
-
-        /// <summary>
-        /// 更新间隔
-        /// </summary>
-        [Space]
-        [Range(0, 5)]
-        public float checkDelta = 0.5f;
-        protected float nextCheckStamp;
-
 
         static bool globalDebugshow = true;
         /// <summary>
