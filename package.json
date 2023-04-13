@@ -1,7 +1,7 @@
 {
   "name": "com.megumin.perception",
   "displayName": "Megumin Perception",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "unity": "2021.3",
   "description": "Wizard Fast Created.\nAI\u611f\u77e5\u6a21\u5757\u3002",
   "category": "PackageWizard",
@@ -19,6 +19,6 @@
     "url": "https://github.com/KumoKyaku"
   },
   "dependencies": {
-    "com.megumin.common": "0.0.1"
+    "com.megumin.common": "1.0.0"
   }
 }
