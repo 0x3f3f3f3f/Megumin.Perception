@@ -156,10 +156,10 @@ namespace Megumin.GameFramework.Perception
 
         [Header("Debug")]
         [Space]
-        public bool DebugSolid = false;
-        public Color DebugColor = Color.green;
+        public bool DebugSolid = true;
+        public Color DebugColor = new(1f, 0.25f, 0, 0.45f);
         [Range(0, 20)]
-        public float DebugLineThickness = 5;
+        public float DebugLineThickness = 2f;
     }
 }
 

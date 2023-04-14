@@ -15,7 +15,7 @@ namespace Megumin.GameFramework.Perception
 
         [Header("Debug")]
         [Space]
-        public bool DebugSolid = false;
+        public bool DebugSolid = true;
         [Range(0, 10)]
         public float DebugLineThickness = 2;
     }
@@ -23,7 +23,7 @@ namespace Megumin.GameFramework.Perception
     [Serializable]
     public class SightLevel : SensorLevel
     {
-        public Color DebugColor = new Color(0.38f, 0.85f, 0.25f, 0.07f);
+        public Color DebugColor = new(0.38f, 0.85f, 0.25f, 0.07f);
 
         [Header("Config")]
         [Range(0, 360)]
