@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-NN
 
+## [1.1.0] - 2023-08-30
+### Changed  
+- 重命名 命名空间 Megumin.GameFramework.Perception -> Megumin.Perception;
+- 
 ## [0.0.1] - 2023-04-07
 PackageWizard Fast Created.
 

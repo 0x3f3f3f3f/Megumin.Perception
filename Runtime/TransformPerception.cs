@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     public class TransformPerception : Perception<Transform>
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.ComponentModel;
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     public interface ISensor
     {

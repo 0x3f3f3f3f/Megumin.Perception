@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     [Serializable]
     public class SensorLevel
@@ -99,7 +99,7 @@ namespace Megumin.GameFramework.Perception
 
 #if UNITY_EDITOR
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     using UnityEditor;
     partial class SightSensor

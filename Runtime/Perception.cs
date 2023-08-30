@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     /// <summary>
     /// 与<see cref="Sensor"/>一起使用
@@ -159,7 +159,7 @@ namespace Megumin.GameFramework.Perception
 
 #if UNITY_EDITOR
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     using UnityEditor;
     partial class Perception<T>

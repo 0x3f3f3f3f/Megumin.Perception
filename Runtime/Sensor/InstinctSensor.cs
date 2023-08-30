@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     /// <summary>
     /// 被警觉感知对象可以设置自己的响声，用于潜行靠近功能。
@@ -166,7 +166,7 @@ namespace Megumin.GameFramework.Perception
 
 #if UNITY_EDITOR
 
-namespace Megumin.GameFramework.Perception
+namespace Megumin.Perception
 {
     using UnityEditor;
     partial class InstinctSensor
