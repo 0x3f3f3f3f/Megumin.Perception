@@ -5,12 +5,13 @@
   "unity": "2021.3",
   "description": "Wizard Fast Created.\nAI\u611f\u77e5\u6a21\u5757\u3002",
   "category": "Megumin",
-  "documentationUrl": "https://example.com/",
-  "changelogUrl": "https://example.com/changelog.html",
-  "licensesUrl": "https://example.com/licensing.html",
+  "documentationUrl": "https://github.com/0x3f3f3f3f/Megumin.Perception",
+  "changelogUrl": "",
+  "licensesUrl": "https://github.com/0x3f3f3f3f/Megumin.Perception",
   "hideInEditor": false,
   "keywords": [
     "PackageWizard",
+    "Megumin",
     "Perception"
   ],
   "author": {
