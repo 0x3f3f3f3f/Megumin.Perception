@@ -13,12 +13,7 @@ namespace Megumin.Perception
             {
                 AutoTarget = target;
             }
-            Debug.Log($"find {target}");
-        }
-
-        public override void OnLostTarget(Transform target)
-        {
-            base.OnLostTarget(target);
+            //Debug.Log($"find {target}");
         }
     }
 }

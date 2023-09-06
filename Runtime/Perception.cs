@@ -104,6 +104,7 @@ namespace Megumin.Perception
                 {
                     //失去感知
                     OnLostTarget(item);
+                    LostTarget?.Invoke(item);
                 }
             }
 
@@ -117,6 +118,7 @@ namespace Megumin.Perception
                 {
                     //新感知
                     OnFindTarget(item);
+                    FindTarget?.Invoke(item);
                 }
             }
 
@@ -126,6 +128,9 @@ namespace Megumin.Perception
 
         [ReadOnlyInInspector]
         public T AutoTarget;
+
+        public UnityEngine.Events.UnityEvent<T> FindTarget;
+        public UnityEngine.Events.UnityEvent<T> LostTarget;
 
         public virtual void OnFindTarget(T target)
         {
