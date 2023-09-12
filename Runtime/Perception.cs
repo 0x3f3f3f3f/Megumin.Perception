@@ -13,7 +13,7 @@ namespace Megumin.Perception
     public partial class Perception<T> : MonoBehaviour
         where T : class
     {
-        public Enableable<GameObjectFilter> OverrideFilter;
+        public Enable<GameObjectFilter> OverrideFilter;
 
         [ProtectedInInspector]
         public List<Sensor> InChildrenSensors;
