@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-NN
 
-
+## [1.1.1] - 2023-09-14
 ### Added   
 - 感知组件增加事件。  
 - 增加感知GameOject组件。  
