@@ -15,6 +15,11 @@ namespace Megumin.Perception
     {
         public Enable<GameObjectFilter> OverrideFilter;
 
+        /// <summary>
+        /// 感知忽略自身对象
+        /// </summary>
+        public bool ExcludeSelf = true;
+
         [ProtectedInInspector]
         public List<Sensor> InChildrenSensors;
 
@@ -84,15 +89,7 @@ namespace Megumin.Perception
                 }
             }
 
-            tempInSensor.Clear();
-            foreach (Collider c in inSensorColliders)
-            {
-                var tV = c.GetComponentInParent<T>();
-                if (tV != null)
-                {
-                    tempInSensor.Add(tV);
-                }
-            }
+            ColloctTempInSensor();
 
             foreach (var item in InSensor)
             {
@@ -124,6 +121,30 @@ namespace Megumin.Perception
 
             InSensor.Clear();
             InSensor.AddRange(tempInSensor);
+        }
+
+        protected virtual void ColloctTempInSensor()
+        {
+            tempInSensor.Clear();
+            foreach (Collider c in inSensorColliders)
+            {
+                var tV = c.GetComponentInParent<T>();
+                if (tV is Component component && component)
+                {
+                    if (ExcludeSelf)
+                    {
+                        //忽略自身
+                        if (component.gameObject != gameObject)
+                        {
+                            tempInSensor.Add(tV);
+                        }
+                    }
+                    else
+                    {
+                        tempInSensor.Add(tV);
+                    }
+                }
+            }
         }
 
         [ReadOnlyInInspector]
