@@ -8,16 +8,18 @@ namespace Megumin.Perception
 {
     public interface ISensor
     {
-        bool TryGetInSensor(HashSet<Collider> results, GameObjectFilter overrideFilter = null, int maxColliders = 10);
+        bool TryGetInSensor(HashSet<Collider> results, int maxColliders = 10);
     }
 
+    /// <summary>
+    /// 传感器组件
+    /// </summary>
     public class Sensor : MonoBehaviour, ISensor
     {
         public GameObjectFilter Filter;
 
 
         public virtual bool TryGetInSensor(HashSet<Collider> results,
-                                           GameObjectFilter overrideFilter = null,
                                            int maxColliders = 10)
         {
             if (enabled == false)
@@ -25,13 +27,7 @@ namespace Megumin.Perception
                 return false;
             }
 
-            var filter = this.Filter;
-            if (overrideFilter != null)
-            {
-                filter = overrideFilter;
-            }
-
-            return filter.TryPhysicsTest(transform.position, GetRadius(), results, CheckCollider);
+            return Filter.TryPhysicsTest(transform.position, GetRadius(), results, CheckCollider);
         }
 
         public virtual float GetRadius()

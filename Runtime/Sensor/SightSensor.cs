@@ -32,6 +32,9 @@ namespace Megumin.Perception
         public float VerticalAngle = 160;
     }
 
+    /// <summary>
+    /// 视觉传感器
+    /// </summary>
     public partial class SightSensor : Sensor
     {
         [ReadOnlyInInspector]

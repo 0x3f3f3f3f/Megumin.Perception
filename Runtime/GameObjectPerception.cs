@@ -11,18 +11,19 @@ namespace Megumin.Perception
             tempInSensor.Clear();
             foreach (Collider c in inSensorColliders)
             {
-                if (ExcludeSelf)
+                if (Filter.HasValue && Filter.Value.Check(c) == false)
                 {
-                    //忽略自身
-                    if (c.gameObject != gameObject)
-                    {
-                        tempInSensor.Add(c.gameObject);
-                    }
+                    //过滤
+                    continue;
                 }
-                else
+
+                if (ExcludeSelf && c.gameObject == gameObject)
                 {
-                    tempInSensor.Add(c.gameObject);
+                    //过滤
+                    continue;
                 }
+
+                tempInSensor.Add(c.gameObject);
             }
         }
 

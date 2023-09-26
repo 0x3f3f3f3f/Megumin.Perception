@@ -7,13 +7,14 @@ using UnityEngine;
 namespace Megumin.Perception
 {
     /// <summary>
+    /// 感知组件
     /// 与<see cref="Sensor"/>一起使用
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public partial class Perception<T> : MonoBehaviour
         where T : class
     {
-        public Enable<GameObjectFilter> OverrideFilter;
+        public Enable<GameObjectFilter> Filter;
 
         /// <summary>
         /// 感知忽略自身对象
@@ -74,17 +75,11 @@ namespace Megumin.Perception
 
             if (InChildrenSensors != null)
             {
-                GameObjectFilter filter = null;
-                if (OverrideFilter.Enabled)
-                {
-                    filter = OverrideFilter.Value;
-                }
-
                 foreach (var item in InChildrenSensors)
                 {
                     if (item != null)
                     {
-                        item.TryGetInSensor(inSensorColliders, filter);
+                        item.TryGetInSensor(inSensorColliders);
                     }
                 }
             }
@@ -126,23 +121,25 @@ namespace Megumin.Perception
         protected virtual void ColloctTempInSensor()
         {
             tempInSensor.Clear();
+
             foreach (Collider c in inSensorColliders)
             {
                 var tV = c.GetComponentInParent<T>();
                 if (tV is Component component && component)
                 {
-                    if (ExcludeSelf)
+                    if (Filter.HasValue && Filter.Value.Check(component) == false)
                     {
-                        //忽略自身
-                        if (component.gameObject != gameObject)
-                        {
-                            tempInSensor.Add(tV);
-                        }
+                        //过滤
+                        continue;
                     }
-                    else
+
+                    if (ExcludeSelf && component.gameObject == gameObject)
                     {
-                        tempInSensor.Add(tV);
+                        //过滤
+                        continue;
                     }
+
+                    tempInSensor.Add(tV);
                 }
             }
         }

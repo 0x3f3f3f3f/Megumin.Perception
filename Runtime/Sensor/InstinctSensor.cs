@@ -14,7 +14,7 @@ namespace Megumin.Perception
     }
 
     /// <summary>
-    /// 直觉，直感，本能
+    /// 直觉，直感，本能，警觉传感器
     /// </summary>
     public partial class InstinctSensor : Sensor
     {
@@ -126,7 +126,7 @@ namespace Megumin.Perception
             return current >= TriggerValue;
         }
 
-        public override bool TryGetInSensor(HashSet<Collider> results, GameObjectFilter overrideFilter = null, int maxColliders = 10)
+        public override bool TryGetInSensor(HashSet<Collider> results, int maxColliders = 10)
         {
             if (enabled == false)
             {
@@ -137,17 +137,7 @@ namespace Megumin.Perception
             {
                 if (Check(item.Key))
                 {
-                    if (overrideFilter != null)
-                    {
-                        if (overrideFilter.Check(item.Key))
-                        {
-                            results.Add(item.Key as Collider);
-                        }
-                    }
-                    else
-                    {
-                        results.Add(item.Key as Collider);
-                    }
+                    results.Add(item.Key as Collider);
                 }
             }
 
