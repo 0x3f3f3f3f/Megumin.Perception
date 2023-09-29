@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-NN
 
+## [1.1.2] - 2023-09-29
+### Changed
+- 感知组件的过滤器进行额外测试，不再重写传感器的过滤器。两种过滤器同时生效。
+
+
 ## [1.1.1] - 2023-09-14
 ### Added   
 - 感知组件增加事件。  
