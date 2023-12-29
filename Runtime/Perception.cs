@@ -20,6 +20,14 @@ namespace Megumin.Perception
         /// 感知忽略自身对象
         /// </summary>
         public bool ExcludeSelf = true;
+        /// <summary>
+        /// 忽略祖先
+        /// </summary>
+        public bool ExcludeAncestorOrSelf = true;
+        /// <summary>
+        /// 忽略后代
+        /// </summary>
+        public bool ExcludeDescendantOrSelf = true;
 
         [ProtectedInInspector]
         public List<Sensor> InChildrenSensors;
@@ -136,6 +144,18 @@ namespace Megumin.Perception
                     if (ExcludeSelf && component.gameObject == gameObject)
                     {
                         //过滤
+                        continue;
+                    }
+
+                    if (ExcludeAncestorOrSelf && transform.IsAncestorOrSelf(component))
+                    {
+                        //过滤 祖先
+                        continue;
+                    }
+
+                    if (ExcludeDescendantOrSelf && component.transform.IsAncestorOrSelf(transform))
+                    {
+                        //过滤 后代
                         continue;
                     }
 
