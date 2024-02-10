@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - YYYY-MM-NN
 
+## [1.1.3] - 2024-02-10
+### Added  
+- 感知组件允许设置过滤自身父代子代
+
 ## [1.1.2] - 2023-09-29
 ### Changed
 - 感知组件的过滤器进行额外测试，不再重写传感器的过滤器。两种过滤器同时生效。
